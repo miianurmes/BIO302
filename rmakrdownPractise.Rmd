@@ -1,0 +1,44 @@
+---
+title: "ParempiRmark"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl) 
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars,warning=FALSE}
+# Title 
+library(tidyverse)#purrr is part of tidyverse
+my_data <- excel_sheets(path = "biomass2015.xls") %>% 
+    map_dfr(~read_excel(path = "biomass2015.xls", sheet =.x)) 
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+my_data <- my_data %>%
+  select(c(site, plot, production)) %>% #select columns from dataset
+  dplyr::mutate(site = factor
+                (site, levels = c("L", "M", "A", "H"))) %>% #make r recognise site as 4 levels
+  group_by(site, plot) %>%  #group the variables by site and by plot
+  summarise(Biomass = sum(production, na.rm = T)) 
+
+```
+```{r}
+p1<- ggplot(my_data, aes (x=site, y=Biomass, colour=site))+
+  geom_boxplot()
+p1
+```
+
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
